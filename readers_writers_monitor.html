@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Readers-Writers (Monitor)</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
+header{padding:20px;background:#fff;border-bottom:1px solid #cbd5e1;font-size:22px;font-weight:bold}
+.controls{padding:16px;display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;padding:10px 16px;border-radius:8px;background:#2563eb;color:white;cursor:pointer}
+main{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;padding:16px}
+section{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;min-width:0}
+#stage{min-height:350px}
+#log{height:450px;overflow:auto}
+.event{padding:10px;border:1px solid #dbeafe;border-radius:8px;margin:10px 0;width:75%;background:#f8fafc}
+.event:nth-child(even){margin-left:20%}
+small{color:#64748b}
+@media(max-width:700px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>Readers-Writers (Monitor)</header>
+<div class="controls">
+<button id="play">Play</button>
+<button id="step">Step</button>
+<button id="reset">Reset</button>
+<label>Speed <select id="speed"><option value="800">0.5x</option><option value="400" selected>1x</option><option value="200">2x</option><option value="80">5x</option></select></label>
+<input id="slider" type="range" min="0" value="0">
+<span id="clock"></span>
+</div>
+<main>
+<section><h2>Simulation</h2><div id="stage"></div></section>
+<section><h2>Event timeline</h2><div id="log"></div></section>
+</main>
+<script>
+const D={"title": "Readers-Writers (Monitor)", "mode": "rw", "actors": ["R1", "R2", "R3", "R4", "W1", "W2"], "forks": 0, "events": [{"seq": 0, "t": 0.0, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 1, "t": 0.0, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 2, "t": 0.0, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 3, "t": 0.0, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 4, "t": 0.0, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 5, "t": 0.0, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 6, "t": 0.125, "actor": "R3", "kind": "state", "state": "waiting"}, {"seq": 7, "t": 0.125, "actor": "R3", "kind": "state", "state": "reading"}, {"seq": 8, "t": 0.125, "actor": "R3", "kind": "access", "action": "read", "value": 0}, {"seq": 9, "t": 0.141, "actor": "R2", "kind": "state", "state": "waiting"}, {"seq": 10, "t": 0.141, "actor": "R2", "kind": "state", "state": "reading"}, {"seq": 11, "t": 0.141, "actor": "R2", "kind": "access", "action": "read", "value": 0}, {"seq": 12, "t": 0.219, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 13, "t": 0.219, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 14, "t": 0.219, "actor": "R4", "kind": "state", "state": "waiting"}, {"seq": 15, "t": 0.219, "actor": "R4", "kind": "state", "state": "reading"}, {"seq": 16, "t": 0.219, "actor": "R4", "kind": "access", "action": "read", "value": 0}, {"seq": 17, "t": 0.219, "actor": "R1", "kind": "state", "state": "waiting"}, {"seq": 18, "t": 0.219, "actor": "R1", "kind": "state", "state": "reading"}, {"seq": 19, "t": 0.219, "actor": "R1", "kind": "access", "action": "read", "value": 0}, {"seq": 20, "t": 0.234, "actor": "W1", "kind": "state", "state": "waiting"}, {"seq": 21, "t": 0.234, "actor": "W2", "kind": "state", "state": "waiting"}, {"seq": 22, "t": 0.281, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 23, "t": 0.281, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 24, "t": 0.297, "actor": "R3", "kind": "state", "state": "waiting"}, {"seq": 25, "t": 0.406, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 26, "t": 0.406, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 27, "t": 0.484, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 28, "t": 0.484, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 29, "t": 0.484, "actor": "W1", "kind": "state", "state": "writing"}, {"seq": 30, "t": 0.5, "actor": "R2", "kind": "state", "state": "waiting"}, {"seq": 31, "t": 0.563, "actor": "W1", "kind": "access", "action": "write", "value": 1}, {"seq": 32, "t": 0.563, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 33, "t": 0.563, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 34, "t": 0.563, "actor": "W2", "kind": "state", "state": "writing"}, {"seq": 35, "t": 0.609, "actor": "R4", "kind": "state", "state": "waiting"}, {"seq": 36, "t": 0.672, "actor": "R1", "kind": "state", "state": "waiting"}, {"seq": 37, "t": 0.781, "actor": "W1", "kind": "state", "state": "waiting"}, {"seq": 38, "t": 0.797, "actor": "W2", "kind": "access", "action": "write", "value": 2}, {"seq": 39, "t": 0.797, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 40, "t": 0.797, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 41, "t": 0.797, "actor": "W1", "kind": "state", "state": "writing"}, {"seq": 42, "t": 0.922, "actor": "W1", "kind": "access", "action": "write", "value": 3}, {"seq": 43, "t": 0.922, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 44, "t": 0.922, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 45, "t": 0.922, "actor": "R4", "kind": "state", "state": "reading"}, {"seq": 46, "t": 0.922, "actor": "R4", "kind": "access", "action": "read", "value": 3}, {"seq": 47, "t": 0.922, "actor": "R2", "kind": "state", "state": "reading"}, {"seq": 48, "t": 0.922, "actor": "R2", "kind": "access", "action": "read", "value": 3}, {"seq": 49, "t": 0.922, "actor": "R1", "kind": "state", "state": "reading"}, {"seq": 50, "t": 0.922, "actor": "R1", "kind": "access", "action": "read", "value": 3}, {"seq": 51, "t": 0.922, "actor": "R3", "kind": "state", "state": "reading"}, {"seq": 52, "t": 0.922, "actor": "R3", "kind": "access", "action": "read", "value": 3}, {"seq": 53, "t": 1.047, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 54, "t": 1.047, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 55, "t": 1.063, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 56, "t": 1.063, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 57, "t": 1.078, "actor": "W2", "kind": "state", "state": "waiting"}, {"seq": 58, "t": 1.109, "actor": "W1", "kind": "state", "state": "waiting"}, {"seq": 59, "t": 1.109, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 60, "t": 1.109, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 61, "t": 1.125, "actor": "R3", "kind": "state", "state": "waiting"}, {"seq": 62, "t": 1.141, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 63, "t": 1.141, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 64, "t": 1.141, "actor": "W2", "kind": "state", "state": "writing"}, {"seq": 65, "t": 1.172, "actor": "R4", "kind": "state", "state": "waiting"}, {"seq": 66, "t": 1.219, "actor": "R1", "kind": "state", "state": "waiting"}, {"seq": 67, "t": 1.25, "actor": "R2", "kind": "state", "state": "waiting"}, {"seq": 68, "t": 1.313, "actor": "W2", "kind": "access", "action": "write", "value": 4}, {"seq": 69, "t": 1.313, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 70, "t": 1.313, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 71, "t": 1.313, "actor": "W1", "kind": "state", "state": "writing"}, {"seq": 72, "t": 1.484, "actor": "W1", "kind": "access", "action": "write", "value": 5}, {"seq": 73, "t": 1.484, "actor": "W1", "kind": "state", "state": "thinking"}, {"seq": 74, "t": 1.484, "actor": "W1", "kind": "state", "state": "done"}, {"seq": 75, "t": 1.484, "actor": "R4", "kind": "state", "state": "reading"}, {"seq": 76, "t": 1.484, "actor": "R4", "kind": "access", "action": "read", "value": 5}, {"seq": 77, "t": 1.484, "actor": "R1", "kind": "state", "state": "reading"}, {"seq": 78, "t": 1.484, "actor": "R1", "kind": "access", "action": "read", "value": 5}, {"seq": 79, "t": 1.484, "actor": "R2", "kind": "state", "state": "reading"}, {"seq": 80, "t": 1.484, "actor": "R2", "kind": "access", "action": "read", "value": 5}, {"seq": 81, "t": 1.484, "actor": "R3", "kind": "state", "state": "reading"}, {"seq": 82, "t": 1.484, "actor": "R3", "kind": "access", "action": "read", "value": 5}, {"seq": 83, "t": 1.547, "actor": "W2", "kind": "state", "state": "waiting"}, {"seq": 84, "t": 1.719, "actor": "R3", "kind": "state", "state": "thinking"}, {"seq": 85, "t": 1.719, "actor": "R3", "kind": "state", "state": "done"}, {"seq": 86, "t": 1.75, "actor": "R4", "kind": "state", "state": "thinking"}, {"seq": 87, "t": 1.75, "actor": "R4", "kind": "state", "state": "done"}, {"seq": 88, "t": 1.766, "actor": "R2", "kind": "state", "state": "thinking"}, {"seq": 89, "t": 1.766, "actor": "R2", "kind": "state", "state": "done"}, {"seq": 90, "t": 1.766, "actor": "R1", "kind": "state", "state": "thinking"}, {"seq": 91, "t": 1.766, "actor": "R1", "kind": "state", "state": "done"}, {"seq": 92, "t": 1.766, "actor": "W2", "kind": "state", "state": "writing"}, {"seq": 93, "t": 2.031, "actor": "W2", "kind": "access", "action": "write", "value": 6}, {"seq": 94, "t": 2.031, "actor": "W2", "kind": "state", "state": "thinking"}, {"seq": 95, "t": 2.031, "actor": "W2", "kind": "state", "state": "done"}]},E=D.events;
+let idx=0,timer=null;
+const $=id=>document.getElementById(id);
+$('slider').max=E.length;
+function compute(n){
+ const state={},forks={};
+ D.actors.forEach(a=>state[a]='thinking');
+ for(let i=0;i<D.forks;i++)forks[i]=null;
+ for(let i=0;i<n;i++){
+  const e=E[i];
+  if(e.kind==='state')state[e.actor]=e.state;
+  if(e.kind==='fork')forks[e.fork]=e.owner;
+ }
+ return {state,forks};
+}
+function render(){
+ const {state,forks}=compute(idx);
+ let html='<div style="display:flex;flex-wrap:wrap;gap:12px">';
+ D.actors.forEach(a=>{
+  const s=state[a]||'thinking';
+  const c=s==='eating'?'#bbf7d0':s==='hungry'?'#fef3c7':s==='done'?'#e2e8f0':'#dbeafe';
+  html+=`<div style="padding:16px;border-radius:10px;background:${c};min-width:100px"><b>${a}</b><p>${s}</p></div>`;
+ });
+ html+='</div><h3>Forks</h3><div style="display:flex;gap:8px;flex-wrap:wrap">';
+ Object.keys(forks).forEach(f=>{
+  html+=`<div style="padding:10px;background:#f1f5f9;border-radius:8px">Fork ${f}: ${forks[f]===null?'Available':'P'+forks[f]}</div>`;
+ });
+ html+='</div>';
+ $('stage').innerHTML=html;
+ $('log').innerHTML=E.slice(0,idx).map(e=>{
+  let msg=e.kind==='state'?`${e.actor} → ${e.state}`:
+   e.kind==='fork'?`Fork ${e.fork}: ${e.owner===null?'released':'taken by P'+e.owner}`:
+   `${e.actor}: ${e.kind}`;
+  return `<div class="event"><b>${msg}</b><br><small>Event ${e.seq+1} · ${e.t}s</small></div>`;
+ }).join('');
+ $('slider').value=idx;
+ $('clock').textContent=idx+'/'+E.length+' events';
+ $('log').scrollTop=$('log').scrollHeight;
+}
+function pause(){clearInterval(timer);timer=null;$('play').textContent='Play'}
+function tick(){if(idx<E.length){idx++;render()}else pause()}
+function play(){if(timer){pause();return}if(idx>=E.length)idx=0;timer=setInterval(tick,+$('speed').value);$('play').textContent='Pause'}
+$('play').onclick=play;
+$('step').onclick=()=>{pause();tick()};
+$('reset').onclick=()=>{pause();idx=0;render()};
+$('speed').onchange=()=>{if(timer){pause();play()}};
+$('slider').oninput=e=>{pause();idx=+e.target.value;render()};
+render();
+</script>
+</body>
+</html>
