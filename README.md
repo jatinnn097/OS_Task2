@@ -68,25 +68,25 @@ The Dining Philosophers problem explains how multiple threads share limited reso
 ### 1. Execute Readers-Writers with Semaphores
 
 ```bash
-python readers_writers/semaphore/rw_semaphore.py --readers 4 --writers 2 --rounds 3 --delay 0.3
+python rw_monitor.py --readers 4 --writers 2 --rounds 3 --delay 0.3 --out .\readers_writers_monitor.html
 ```
 
 ### 2. Execute Readers-Writers with Monitors
 
 ```bash
-python readers_writers/monitor/rw_monitor.py --readers 4 --writers 2 --rounds 3 --delay 0.3
+python rw_monitor.py --readers 4 --writers 2 --rounds 3 --delay 0.3 --out .\readers_writers_monitor.html
 ```
 
 ### 3. Execute Dining Philosophers with Semaphores
 
 ```bash
-python dining_philosophers/semaphore/dp_semaphore.py --meals 3 --delay 0.3
+python dining_philosophers_semaphore.py
 ```
 
 ### 4. Execute Dining Philosophers with Monitors
 
 ```bash
-python dining_philosophers/monitor/dp_monitor.py --meals 3 --delay 0.3
+python dining_philosophers_monitor.py
 ```
 
 **Important:** Execute these commands from the repository's root folder. On Windows, the `python` command generally works instead of `python3`.
